@@ -1,0 +1,155 @@
+<?php require_once("Connections\conn.php");?>
+<?php
+	ob_start();
+	session_start();
+        
+    $arr_self = explode("/",$_SERVER['PHP_SELF']);
+    $self = $arr_self[count($arr_self)-1];  
+    $back_page = ($self=="index.html" ? "." : $self);
+    $otentikasi = "otentikasi.php";   
+       
+    if(!isset($_SESSION[$app_code."username"])){
+    	header("location: ".$otentikasi."?back=".urlencode($back_page));
+        exit;
+    }
+    ob_end_flush();
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Administrator Kedai Online</title>
+<script type="text/javascript" src="scriptstyle.js"></script>
+</head>
+
+<body class="oneColLiqCtrHdr">
+
+<div id="container">
+  <div id="header">
+  		<?php include_once("header.php"); ?>
+        <!-- end #header -->  
+  </div>
+  <div id="mainContent">
+    <script type="text/javascript" language="javascript">
+		function formMemberCallback(req){
+			showFormEditMember(false);
+			document.getElementById('form_member_insert').reset();
+			dsMember.loadData();
+		}
+		
+		var dsProduk = new Spry.Data.XMLDataSet("rsxml.php?tabel=produk", "kedaionline_db/produk",{useCache:false});
+		var dsMember = new Spry.Data.XMLDataSet("rsxml.php?tabel=member", "kedaionline_db/member",{useCache:false});
+		var dsMemberCheckout = new Spry.Data.XMLDataSet("rsxml.php?tabel=member_checkout_view", "kedaionline_db/member_checkout_view[member_token='{dsMember::token}']",{useCache:false});
+		var dsMemberCheckoutProduk = new Spry.Data.XMLDataSet("rsxml.php?tabel=member_checkout_produk_view", "kedaionline_db/member_checkout_produk_view",{useCache:false});
+			
+		function formatMemberCheckout(ds,row,row_number){
+			var total = parseInt(row['total'].replace(',',''));			
+			row['total']=toCurrency(total);
+			
+			if(row['harga']){
+				var harga = parseInt(row['harga'].replace(',',''));			
+				row['harga']=toCurrency(harga);
+			}
+			
+			return row;		
+		}
+		
+		dsMemberCheckout.filter(formatMemberCheckout);
+		dsMemberCheckoutProduk.filter(formatMemberCheckout);
+		
+		function showFormEditMember(show){
+			if(show){
+				Spry.$$('#detil').removeClassName('hiden');	
+			}
+			else{
+				Spry.$$('#detil').addClassName('hiden');
+			}
+		}
+	</script>
+    
+    <div id="formcontainer">
+        <div spry:region="dsMember dsMemberCheckout dsMemberCheckoutProduk">
+                <div spry:state="ready">
+                <table class="list" cellpadding="0" cellspacing="0">
+                    <caption>List Member</caption>
+                    <thead>
+        				<tr>
+                        	<th spry:sort="id">Id</th>
+                        	<th>No.ID</th>
+                  			<th spry:sort="nama">Nama</th>
+                        	<th>Alamat</th>
+                        	<th>e-mail</th>
+                        	<th>Tgl.Daftar</th>
+          				</tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <tr spry:repeat="dsMember" spry:setrow="dsMember" spry:select="listRowSelect" spry:hover="listRowHover" onclick="showFormEditMember(true)">
+                            <td>{id}</td>
+                            <td>{no_id}</td>
+                            <td>{nama}</td>
+                            <td>{alamat}</td>
+                            <td>{email}</td>
+                            <td>{tanggal_daftar}</td>                
+                      </tr>
+                   </tbody>
+                </table>
+                </div>
+            </div>
+            <div id="detil" spry:detailregion="dsMember dsMemberCheckout dsMemberCheckoutProduk dsProduk" class="hiden">
+            <table class="list" cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                      	<th>Tgl.Checkout</th>                
+                        <th class="nilai">Total</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+              <tbody spry:repeatchildren="dsMemberCheckout">
+                    <tr>
+                        <td>{dsMemberCheckout::id}</td>
+                        <td>{dsMemberCheckout::tanggal}</td>
+                        <td class="nilai">{dsMemberCheckout::total}</td>                
+                    </tr>
+                <tr>
+                        <td></td>
+                  <td colspan="2">
+                    <table class="list" cellpadding="0" cellspacing="0">
+                    	<thead>
+                                <tr>
+                                  <th>Produk</th>
+                                    <th>Qty</th>
+                                    <th class="nilai">Harga</th>
+                                    <th class="nilai">Sub Total</th>
+                                </tr>
+                         </thead>
+                         <tfoot></tfoot>
+                         <tbody>
+                      <tr spry:repeat="dsMemberCheckoutProduk" spry:test="'{dsMemberCheckout::token}'=='{dsMemberCheckoutProduk::token}'">
+                        		<td spry:repeat="dsProduk" spry:test="'{dsMemberCheckoutProduk::produk_token}'=='{dsProduk::token}'">{dsProduk::nama}</td>                         
+                        		<td>{dsMemberCheckoutProduk::qty}</td>
+                                <td class="nilai">{dsMemberCheckoutProduk::harga}</td>
+                                <td class="nilai">{dsMemberCheckoutProduk::total}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                        </td>
+                    </tr>
+              </tbody>
+            </table>
+            </div>
+        <div id="status"></div>
+        </div>
+    <!-- end #mainContent -->
+  </div>
+  <div id="footer">
+    <?php include_once("footer.php"); ?>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+</body>
+</html>

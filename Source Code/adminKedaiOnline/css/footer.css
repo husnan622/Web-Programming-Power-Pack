@@ -1,0 +1,17 @@
+@charset "utf-8";
+/* CSS Document */
+
+#footer_container {
+	margin-top:15px;
+	margin-bottom:10px;
+	width:100%;
+	font-family: "Lucida Sans Unicode", "Lucida Sans";
+	text-shadow:#DADADA;
+	color: #0D4383;
+}
+#footer_container div:first-child { font-size:12px; }
+#footer_container div:last-child { font-size:10px; }
+#footer_container .super {
+	vertical-align:super;
+	font-size:9px;
+}

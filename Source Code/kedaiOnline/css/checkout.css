@@ -1,0 +1,22 @@
+@charset "utf-8";
+/* CSS Document */
+
+#checkout_container {
+	font-family:"Lucida Sans Unicode", "Lucida Sans";
+	text-shadow: 2px 2px 2px #CCC;
+}	
+#checkout_container table { font-size:13px }
+#checkout_container table thead th {
+	text-align:center;
+	font-weight:bold;
+	border:1px solid #DAD3D3;
+	empty-cells:hide;
+}
+#checkout_container table tbody td { border:1px solid #DAD3D3; }
+
+#checkout_container table tbody td input[type:"text"] { width: 20px; }
+.nilai { text-align:right; }
+#checkout_container table tfoot td { 
+	font-size: 110%; 
+	padding-top: 10px;
+}

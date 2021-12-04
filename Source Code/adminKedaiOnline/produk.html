@@ -1,0 +1,283 @@
+<?php require_once("Connections\conn.php");?>
+<?php
+	ob_start();
+	session_start();
+        
+    $arr_self = explode("/",$_SERVER['PHP_SELF']);
+    $self = $arr_self[count($arr_self)-1];  
+    $back_page = ($self=="index.html" ? "." : $self);
+    $otentikasi = "otentikasi.php";
+       
+    if(!isset($_SESSION[$app_code."username"])){
+    	header("location: ".$otentikasi."?back=".urlencode($back_page));
+        exit;
+    }
+    ob_end_flush();
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Administrator Kedai Online</title>
+<script type="text/javascript" src="scriptstyle.js"></script>
+</head>
+
+<body class="oneColLiqCtrHdr">
+
+<div id="container">
+  <div id="header">
+  		<?php include_once("header.php"); ?>
+        <!-- end #header -->  
+  </div>
+  <div id="mainContent">
+    <script type="text/javascript">
+		var dsProdukKategori = new Spry.Data.XMLDataSet("rsxml.php?tabel=kategori", "kedaionline_db/kategori",{useCache:false});
+		var dsProdukImage = new Spry.Data.XMLDataSet("rsxml.php?tabel=produk_image", "kedaionline_db/produk_image",{useCache:false});
+		var dsProduk = new Spry.Data.XMLDataSet("rsxml.php?tabel=produk", "kedaionline_db/produk",{useCache:false});
+		var dsProdukPager = new Spry.Data.PagedView(dsProduk,{ pageSize: 10 });
+		var dsProdukPagerInfo = dsProdukPager.getPagingInfo();
+
+		function formatProdukHarga(ds,row,row_number){
+			var harga = parseInt(row['harga'].replace(',',''));
+			var harga_spesial = parseInt(row['harga_spesial'].replace(',',''));
+		
+			row['harga']=toCurrency(harga);
+			row['harga_spesial']=toCurrency(harga_spesial);
+			
+			return row;
+		}
+	
+		dsProduk.filter(formatProdukHarga);
+		
+    	function formProdukCallback(req){
+			showFormEditProduk(false);
+			document.getElementById('form_produk_insert').reset();
+			dsProduk.loadData();
+			dsProdukKategori.loadData();
+			dsProdukImage.loadData();
+		}		
+		
+		function Harga(region, lookupFunc){ 
+     		return toDecimal(lookupFunc("{harga}"));
+   		}
+		
+		function HargaSpesial(region, lookupFunc){ 
+     		return toDecimal(lookupFunc("{harga_spesial}"));
+   		}
+	</script>
+    
+	<div id="formcontainer">
+  		<div id="reg" spry:region="dsProduk dsProdukKategori dsProdukPager dsProdukPagerInfo" style="text-align:center">
+    		<div spry:state="ready">
+      			<table class="list" cellpadding="0" cellspacing="0">
+        			<caption>List Produk</caption>
+                    <thead>
+                    	<tr>
+                    		<th spry:sort="dsProdukKategori::id">Kategori</th>
+                        	<th spry:sort="id">Id</th>
+          					<th>Nama</th>
+          					<th>Deskripsi</th>
+          					<th>Harga</th>
+                        	<th>Harga Spesial</th>
+						</tr>
+                    </thead>
+                    <tfoot>
+                    	<tr>
+                        	<td colspan="6" spry:repeatchildren="dsProdukPagerInfo">
+                            	<a spry:if="{dsProdukPagerInfo::ds_CurrentRowNumber} != {dsProdukPagerInfo::ds_RowNumber}" href="#" onclick="dsProdukPager.goToPage('{dsProdukPagerInfo::ds_PageNumber}'); return false;">{dsProdukPagerInfo::ds_PageNumber}</a>
+                <span spry:if="{dsProdukPagerInfo::ds_CurrentRowNumber} == {dsProdukPagerInfo::ds_RowNumber}" class="currentPage">{dsProdukPagerInfo::ds_PageNumber}</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    <tbody spry:repeatchildren="dsProdukPager" spry:choose="choose">
+                        <tr  spry:when="{dsProdukPager::ds_RowID} == {dsProduk::ds_CurrentRowID}" spry:selectgroup="page" spry:selected="selected" spry:setrow="dsProduk" spry:select="listRowSelect" onclick="showFormEditProduk(true)" spry:hover="listRowHover" >
+                            <td spry:repeat="dsProdukKategori" spry:test="'{dsProduk::kategori_token}' == '{dsProdukKategori::token}'">{dsProdukKategori::nama}</td>
+                            <td>{dsProduk::id}</td>
+                            <td>{dsProduk::nama}</td>
+                            <td>{dsProduk::deskripsi}</td>
+                            <td class="nilai">{dsProduk::harga}</td>
+                            <td class="nilai">{dsProduk::harga_spesial}</td>
+                        </tr>
+                        <tr spry:default="default" spry:selectgroup="page" spry:setrow="dsProdukPager" spry:select="listRowSelect" onclick="showFormEditProduk(true)" spry:hover="listRowHover" >
+                            <td spry:repeat="dsProdukKategori" spry:test="'{dsProdukPager::kategori_token}' == '{dsProdukKategori::token}'">{dsProdukKategori::nama}</td>
+                            <td>{dsProdukPager::id}</td>
+                            <td>{dsProdukPager::nama}</td>
+                            <td>{dsProdukPager::deskripsi}</td>
+                            <td class="nilai">{dsProdukPager::harga}</td>
+                            <td class="nilai">{dsProdukPager::harga_spesial}</td>
+                        </tr>
+                    </tbody>
+      			</table>
+    		</div>
+  		</div>
+  
+  		<div id="form_prd">
+    		<form name="form_produk_insert" id="form_produk_insert" method="post" enctype="multipart/form-data" action="rsquery.php?tabel=produk&amp;for=add" onsubmit="return formSubmit(this,formProdukCallback)" target="dump">
+      			<input type="text" name="produk_id" id="produk_id" style="display:none" value="">
+      			<fieldset>
+        			<legend>Tambah Produk</legend>
+        			<span id="spryselect1">
+        				<label for="produk_kategori">Kategori:</label>
+        				<select name="produk_kategori" id="produk_kategori" spry:region="dsProdukKategori">
+          					<option value="-1">Pilih Kategori</option>
+          					<option spry:repeat="dsProdukKategori" value="{token}">{nama}</option>
+        				</select>
+        				<span class="selectRequiredMsg">*</span>
+					</span><br/><div class="clear"></div>
+        			<span id="sprynama1">
+        				<label for="produk_nama">Nama:</label>
+        				<input type="text" name="produk_nama" id="produk_nama" />
+        				<span class="textfieldRequiredMsg">*</span> 
+					</span><br />
+                    <span id="sprydeskripsi1">
+                    	<label for="label">Deskripsi:</label>
+                        <textarea name="produk_deskripsi" id="label" cols="45" rows="5"></textarea>
+                        <span class="textareaRequiredMsg">*</span>
+					</span><br />
+                    <span id="spryharga1">
+                    	<label>Harga:</label>
+                        <input type="text" name="produk_harga" id="produk_harga" />
+                        <span class="textfieldRequiredMsg">*</span>
+					</span><br />
+                    <span id="spryhargaspes1">
+        				<label>Harga Spesial:</label>
+        				<input type="text" name="produk_harga_spesial" id="produk_harga_spesial" />
+        				<span class="textfieldRequiredMsg">*</span>
+					</span><br />
+                    <span id="spryfoto11">
+                    	<label for="produk_foto1">Foto 1</label>
+                        <input type="file" name="produk_foto1" id="produk_foto1" />
+                        <span class="textfieldRequiredMsg">A value is required.</span>
+					</span><br/>
+                    <span id="spryfoto12">
+                    	<label for="produk_foto2">Foto 2</label>
+                        <input type="file" name="produk_foto2" id="produk_foto2" />
+                        <span class="textfieldRequiredMsg">A value is required.</span>
+					</span><br />
+                    <span id="spryfoto13">
+                    	<label for="produk_foto3">Foto 3</label>
+                        <input type="file" name="produk_foto3" id="produk_foto3" />
+                        <span class="textfieldRequiredMsg">A value is required.</span>
+					</span><br />
+				</fieldset>
+				<div class="kontrol">
+                	<input name="btn_submit1" type="submit" value="Simpan" />
+                	<input name="btn_reset1" type="reset" value="Reset" />
+				</div>
+			</form>
+
+			<form class="hiden" name="form_produk" id="form_produk" method="post" action="rsquery.php?tabel=produk&amp;for=add" enctype="multipart/form-data" onsubmit="return formSubmit(this,formProdukCallback);" target="dump" spry:detailregion="dsProduk dsProdukKategori dsProdukImage">
+            	<input type="text" name="produk_id" id="produk_id" style="display:none" value="{token}">
+                <fieldset>
+                	<legend>Edit Produk</legend>
+                        <span id="spryselect2">
+                            <label>Kategori:</label>
+                            <select name="produk_kategori" id="produk_kategori">
+                                <option>Pilih Kategori</option>
+                                <option spry:repeat="dsProdukKategori" value="{dsProdukKategori::token}">{dsProdukKategori::nama}</option>
+                                <option spry:repeat="dsProdukKategori" selected="selected" spry:test="'{dsProduk::kategori_token}' == '{dsProdukKategori::token}'" value="{dsProdukKategori::token}">{dsProdukKategori::nama}</option>
+                            </select>
+                            <span class="selectRequiredMsg">Please select an item.</span>
+                        </span><br/><div class="clear"></div>
+                        <span id="sprynama2">
+                            <label>Nama:</label>
+                            <input type="text" name="produk_nama" id="produk_nama" value="{dsProduk::nama}" />
+                            <span class="textfieldRequiredMsg">A value is required.</span>
+                            </span><br />
+                            <span id="sprydeskripsi2">
+                                <label for="produk_deskripsi">Deskripsi:</label>
+                                <textarea name="produk_deskripsi" id="produk_deskripsi" cols="30" rows="5">{dsProduk::deskripsi}</textarea>
+                                <span class="textareaRequiredMsg">A value is required.</span>
+                        </span><br/>
+                        <span id="spryharga2">
+                            <label>Harga:</label>
+                            <input type="text" name="produk_harga" id="produk_harga" value="{function::Harga}" />
+                            <span class="textfieldRequiredMsg">A value is required.</span>
+                        </span><br />
+                        <span id="spryhargaspes2">
+                            <label>Harga Spesial:</label>
+                            <input type="text" name="produk_harga_spesial" id="produk_harga_spesial" value="{function::HargaSpesial}" />
+                            <span class="textfieldRequiredMsg">A value is required.</span>
+                        </span><br/>
+                        <table cellpadding="0" cellspacing="0" class="listfoto">
+                            <tr>
+                                <td><img src="viewer.php?source=loc&id={token}&index=0" width="150px" alt="Foto1" /></td>
+                                <td><img src="viewer.php?source=loc&id={token}&index=1" width="150px" alt="Foto2" /></td>
+                                <td><img src="viewer.php?source=loc&id={token}&index=2" width="150px" alt="Foto3" /></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span id="spryfoto21">
+                                        <label for="label2">Foto 1</label>
+                                        <input type="file" name="produk_foto1" id="label2" value="{foto1}" />
+                                        <span class="textfieldRequiredMsg">A value is required.</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span id="spryfoto22">
+                                        <label for="label3">Foto 2</label>
+                                        <input type="file" name="produk_foto2" id="label3" value="{foto2}" />
+                                        <span class="textfieldRequiredMsg">A value is required.</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span id="spryfoto23">
+                                        <label for="label4">Foto 3</label>
+                                        <input type="file" name="produk_foto3" id="label4" value="{foto3}" />
+                                        <span class="textfieldRequiredMsg">A value is required.</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+				</fieldset>
+                <div class="kontrol">
+      				<input name="btn_submit2" type="submit" value="Simpan" />
+      				<input name="btn_hapus2" type="button" value="Hapus" onclick="hapusProduk();" />
+      				<input name="btn_cancel" type="button" value="Batal" onclick="showFormEditProduk(false);" />
+                </div>
+			</form>
+  		</div>
+  		<div id="status"></div>
+	</div>
+    
+    <script type="text/javascript" language="javascript">
+	function showFormEditProduk(show){
+		if(show){
+			Spry.$$('#form_produk_insert').addClassName('hiden');
+			Spry.$$('#form_produk').removeClassName('hiden');	
+		}
+		else{
+			Spry.$$('#form_produk_insert').removeClassName('hiden');
+			Spry.$$('#form_produk').addClassName('hiden');
+		}
+	}
+	
+	function hapusProduk(){
+		var row = dsProduk.getCurrentRow();
+		
+		if(confirm("Anda yakin menghapus data ?")){
+			var loadurl=Spry.Utils.loadURL("post","rsquery.php?tabel=produk&produk_nama="+row['nama']+"&produk_id="+row['token']+"&for=rem",true,formProdukCallback);
+		}
+	}
+	
+	var sprynama1 = new Spry.Widget.ValidationTextField("sprynama1");
+	var sprydeskripsi1 = new Spry.Widget.ValidationTextarea("sprydeskripsi1");
+	var spryharga1 = new Spry.Widget.ValidationTextField("spryharga1","integer",{allowNegative:"false"});
+	var spryhargaspes1 = new Spry.Widget.ValidationTextField("spryhargaspes1","integer",{allowNegative:"false"});
+	
+	var sprynama2 = new Spry.Widget.ValidationTextField("sprynama2","none");
+	var sprydeskripsi2 = new Spry.Widget.ValidationTextarea("sprydeskripsi2");
+	
+	var spryselect1 = new Spry.Widget.ValidationSelect("spryselect1",{invalidValue:"-1"});
+	var spryselect2 = new Spry.Widget.ValidationSelect("spryselect2","none");
+</script>
+    <!-- end #mainContent -->
+  </div>
+  <div id="footer">
+    <?php include_once("footer.php"); ?>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<iframe id="dump" name="dump" src=""></iframe>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:spry="http://ns.adobe.com/spry">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<link href="../CSS/style.css" rel="stylesheet" type="text/css" />
+<script src="http://localhost/Spry/includes/SpryUtils.js" type="text/javascript"></script>
+<script src="http://localhost/Spry/includes/SpryDOMUtils.js" type="text/javascript"></script>
+<script src="../SpryAssets/xpath.js" type="text/javascript"></script>
+<script src="../SpryAssets/SpryData.js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+var ds2 = new Spry.Data.XMLDataSet("SampelCategory.xml", "categories/category");
+var ds1 = new Spry.Data.XMLDataSet("SampelData.xml", "data_barang/barang");
+//-->
+</script>
+<style>
+	.genap  { color:blue;}
+	.ganjil { color:brown;}
+	.hover  { color:red;}
+	.select { color:yellow;}
+</style>
+</head>
+
+<body">
+<div spry:region="ds1 ds2">
+  <table border="1">
+    <tr>
+      <th spry:sort="@id">Id</th>
+      <th spry:sort="nama">Nama</th>
+      <th spry:sort="category">Kategory</th>
+    </tr>
+    <div spry:repeatchildren="ds2">
+    <tr spry:repeat="ds1" spry:hover="hover" spry:test="'{ds1::category}'=='{ds2::@id}'">
+      <td>{ds1::@id}</td>
+      <td>{ds1::nama}</td>
+      <td>{ds2::nama}</td>
+    </tr>
+    </div>
+  </table>
+</div>
+</body>
+</html>

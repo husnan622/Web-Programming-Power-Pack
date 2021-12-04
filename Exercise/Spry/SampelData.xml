@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data_barang>
+	<barang id="1">
+		<nama>Barang Satu</nama>
+		<category>1</category>
+	</barang>
+	<barang id="2">
+		<nama>Barang Dua</nama>
+		<category>1</category>
+	</barang>
+	<barang id="3">
+		<nama>Barang Tiga</nama>
+		<category>2</category>
+	</barang>
+	<barang id="4">
+		<nama>Barang Empat</nama>
+		<category>2</category>
+	</barang>
+	<barang id="5">
+		<nama>Barang Lima</nama>
+		<category></category>
+	</barang>
+</data_barang>

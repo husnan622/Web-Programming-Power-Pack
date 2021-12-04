@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<script src="http://localhost/spry/includes/SpryUtils.js" type="text/javascript"></script>
+<script src="http://localhost/spry/includes/SpryDOMUtils.js" type="text/javascript"></script>
+<script type="text/javascript">
+	function test(){
+		Spry.$$("p:first-of-type").toggleClassName("testclass");
+	}
+	
+	function addEvent(){
+		Spry.$$("p").addEventListener("click",testEvent,false);
+		//Spry.Utils.addEventListener("p","click",testEvent,false);
+		Spry.Utils.addEventListener("mydiv","click",function(evt){ alert('ini fungsi generik'); evt.preventDefault(); },false);
+	}
+	
+	function removeEvent(){
+		Spry.$$("p").removeEventListener("click",testEvent,false);
+		//Spry.Utils.removeEventListener("p","click",testEvent,false);
+		Spry.Utils.removeEventListener("mydiv","click",function(evt){ alert('ini fungsi generik'); evt.preventDefault();},false);
+	}
+	
+	function testEvent(evt){
+		alert(this.innerHTML);
+		evt.stopPropagation();
+		evt.preventDefault();
+	}
+	
+	function testForEach(){
+		var x=1;
+		Spry.$$("p").forEach(function(p){
+			Spry.$$(p.nodeName).addClassName("testclass");
+			
+			if(p.innerHTML=="Test "+x)
+				Spry.$$("p[innerHTML]=Test "+x).setProperty("id",x);
+			x+=1;			
+		});		
+	}
+	
+	function testRemoveAttribute(){
+		Spry.$$("p").removeAttribute("class");
+		Spry.Utils.removeAttribute("input","id");
+	}
+</script>
+<style>
+	.testclass { font-weight:bold;}
+</style>
+</head>
+
+<body>
+	<div>
+    	<input type="button" id="btnTest" onclick="test()" value="Test" />
+        <input type="button" id="btnTestAddEvent" onclick="addEvent()" value="Add Event Listener" />
+        <input type="button" id="btnTestRemoveEvent" onclick="removeEvent()" value="Remove Event Listener" />
+        <input type="button" id="btnTestForEach" onclick="testForEach()" value="forEach" />
+        <input type="button" id="btnTestRemoveAtribut" onclick="testRemoveAttribute()" value="Remove Atribut" />
+    </div>
+	<div id="mydiv">
+    	<p>Test 1
+        	<span>Test 1.1</span>
+        </p>
+        <p class="testclass">Test 2</p>
+        <p class="testclass">Test 3</p>
+        <p class="testclass">Test 4</p>
+        <p class="testclass">Test 5</p>
+        <p class="testclass">Test 6</p>
+        <p class="testclass">Test 7</p>
+        <p class="testclass">Test 8</p>
+        <p class="testclass">Test 9</p>
+        <p class="testclass">Test 10</p>
+    </div>
+</body>
+</html>

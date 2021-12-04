@@ -1,0 +1,33 @@
+#header_container { display:block; }
+#header_logo {
+	background-image: url(../images/logo.png);
+	background-size:contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+	float: left;
+	height: 81px;
+	width: 200px;
+	cursor:pointer;
+	margin: 10px 0px 0px 10px;
+}
+#header_tengah {
+	margin-right: 24%;
+	margin-left: 23.5%;
+	vertical-align: middle;
+	text-align: center;
+	height: 120px;
+}
+#header_user {
+	padding-top:10px;
+	height: 120px;
+	width: 22%;
+	float: right;
+}
+#home_tooltip div p {
+	font-size:11px;
+	text-shadow: 2px 2px 2px #CCC;
+}
+.clear {
+	clear: both;
+	float: none;
+}

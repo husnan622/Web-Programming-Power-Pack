@@ -1,0 +1,16 @@
+@charset "utf-8";
+/* CSS Document */
+#kategori {
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size:95%;
+	text-shadow: 2px 2px 2px #CCC;
+}
+#kategori ul li { list-style:none; }
+#kategori ul li ul li {
+	list-style: square;
+	margin-bottom: 10px;
+}
+#kategori ul li ul li a {
+	text-decoration:none;
+	color:#6C6C6C;
+}

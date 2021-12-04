@@ -1,0 +1,57 @@
+@charset "utf-8";
+/* CSS Document */
+/* Produk Detil */
+
+#produk_container {
+	padding-top:50px;
+	margin-left:10%;
+	margin-right:10%;
+	display:block;
+}
+#produk_foto {
+	float: left;
+	width:45%;
+	vertical-align:middle;
+	text-align:center;
+}
+#selectedFoto {
+	width:200px;
+	height:100px;
+	border:10px solid #EEEEEE;
+	margin-top: 5px;
+	margin-bottom:15px;
+}
+.listfoto { display: inline; }
+.listfoto .container_foto {
+	float:left;
+	margin-left:15px;
+	text-align:center;
+	vertical-align:middle;
+	cursor:pointer;
+}
+#produk_deskripsi {
+	float:right;
+	width:45%;
+}
+#produk_deskripsi ul { font-family:"Lucida Sans Unicode", "Lucida Sans"; }
+#produk_deskripsi ul li {
+	list-style:none;
+	margin-bottom: 5px;
+}
+#produk_deskripsi ul li.nama {
+	font-size:120%;
+	margin-bottom:5px;
+}
+#produk_deskripsi ul li.deskripsi {
+	font-family:"Courier New", Courier, monospace;
+	font-size:70%;
+	font-style:italic;
+	margin-bottom: 20px;
+}
+#produk_deskripsi ul li.harga { font-size:85%; }
+#produk_deskripsi ul li #btn_addtocart { margin-top: 10px; }
+#produk_deskripsi .coret {
+	text-decoration:line-through;
+	color:#FF0000;
+}
+#produk_deskripsi .hide { display:none; }

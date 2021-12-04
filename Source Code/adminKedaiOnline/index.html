@@ -1,0 +1,47 @@
+<?php require_once("Connections\conn.php");?>
+<?php
+	ob_start();
+	session_start();
+        
+    $arr_self = explode("/",$_SERVER['PHP_SELF']);
+    $self = $arr_self[count($arr_self)-1];  
+    $back_page = ($self=="index.html" ? "." : $self);
+    $otentikasi = "otentikasi.php";   
+       
+    if(!isset($_SESSION[$app_code."username"])){
+    	header("location: ".$otentikasi."?back=".urlencode($back_page));
+        exit;
+    }
+    ob_end_flush();
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Administrator Kedai Online</title>
+<script type="text/javascript" src="scriptstyle.js"></script>
+</head>
+
+<body class="oneColLiqCtrHdr">
+
+<div id="container">
+  <div id="header">
+  		<?php include_once("header.php"); ?>
+        <!-- end #header -->  
+  </div>
+  <div id="mainContent">
+    <h3> Administrator Kedai Online </h3>
+    <div id="menushortcut">
+    	<p><a href="kategori.html">Kategori</a></p>
+        <p><a href="produk.html">Produk</a></p>
+        <p><a href="member.html">Member</a></p>
+        <p><a href="user.html">User</a></p>
+    </div>
+    <!-- end #mainContent -->
+  </div>
+  <div id="footer">
+    <?php include_once("footer.php"); ?>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+</body>
+</html>

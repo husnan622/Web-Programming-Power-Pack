@@ -1,0 +1,20 @@
+@charset "utf-8";
+/* CSS Document */
+
+#cart_container {
+	font-family:"Lucida Sans Unicode", "Lucida Sans";
+	text-shadow: 2px 2px 2px #CCC;
+}
+#cart_container .cart_items table { font-size:12px; }
+#cart_container .cart_items table caption {
+	border:1px solid #DAD3D3;
+	margin-left:2px;
+	margin-right:2px;
+}
+#cart_container .cart_items table thead tr th {
+	text-align:center;
+	font-size:105%;
+	font-weight:normal;
+	border:1px solid #DAD3D3;
+}
+#cart_container .cart_items table tbody tr td { border:1px solid #DAD3D3; }

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Demo &#8211; CSS typography experiment and browser inconsistencies &#8211; Nicolas Gallagher</title>
+	<meta name="description" content="A demonstration that recreates the I Love Typography image using nothing but CSS and semantic HTML. By Nicolas Gallagher">
+    <link rel="canonical" href="/css-typography-experiment/demo/">     
+	<style>
+		body {
+			padding:0;
+			margin:0;
+			font-family:Times New Roman, serif;
+			background:#000;
+		}
+
+		p {
+			position:relative;
+			width:1100px;
+			padding:100px 0 0;
+			margin:0 auto;
+			font-size:175px;
+			font-weight:bold;
+			line-height:1.2;
+			letter-spacing:-13px;
+			color:#0caac7;
+
+			-moz-transform:rotate(-20deg);
+			-webkit-transform:rotate(-20deg);
+			-o-transform:rotate(-20deg);
+			transform:rotate(-20deg);
+		}
+
+		/* "i" */
+		p:first-letter {
+			float:left;
+			margin:-137px -20px 0 0;
+			font-size:880px;
+			line-height:595px;
+			text-transform:lowercase;
+		}
+
+		/* "love" */
+		p:first-line {
+			font-size:200px;
+		}
+
+		/* "typography" */
+		p strong {
+			display:block;
+			margin:-80px 0 0;
+			font-weight:normal;
+			letter-spacing:-2px;
+			text-transform:capitalize;
+		}
+
+		p strong:first-letter {
+			margin-right:-30px;
+			color:#fff;
+		}
+				
+		/* "a lot" */
+		p em {
+			position:absolute;
+			z-index:10;
+			top:100px;
+			left:147px;
+			width:136px;
+			overflow:hidden;
+			padding-left:64px;
+			font-size:200px;
+			font-style:normal;
+			text-transform:lowercase;
+			color:#fff;
+		}
+
+		p em:first-letter {
+			float:left;
+			margin:130px 0 0 -55px;
+			font-size:80px;
+			font-style:italic;
+			line-height:20px;
+			color:#fff;
+		}
+				
+		/* hide the tip of the "t" from "a lot" */
+		p em:after {
+			content:"";
+			position:absolute;
+			z-index:1;
+			top:105px;
+			right:0;
+			width:5px;
+			height:5px;
+			background:#000;
+		}
+
+		/* create the heart shape */
+		p:after {
+			content:"";
+			position:absolute;
+			z-index:1;
+			top:225px;
+			left:120px;
+			width:75px;
+			height:50px;
+			background:#000;
+
+			-moz-transform:rotate(45deg);
+			-webkit-transform:rotate(45deg);
+			-o-transform:rotate(45deg);
+			transform:rotate(45deg);
+
+			-moz-border-radius:25px 0 0 30px;
+			-webkit-border-top-left-radius:25px;
+			-webkit-border-bottom-left-radius:30px;
+			border-radius:25px 0 0 30px;
+		}
+
+		p strong:after {
+			content:"";
+			position:absolute;
+			z-index:1;
+			top:225px;
+			left:138px;
+			width:75px;
+			height:50px;
+			background:#000;
+
+			-moz-transform:rotate(-45deg);
+			-webkit-transform:rotate(-45deg);
+			-o-transform:rotate(-45deg);
+			transform:rotate(-45deg);
+
+			-moz-border-radius:0 25px 30px 0;
+			-webkit-border-top-right-radius:25px;
+			-webkit-border-bottom-right-radius:30px;
+			border-radius:0 25px 30px 0;
+		}
+	</style>
+    
+	<script>	
+		var _gaq = _gaq || []; 	_gaq.push(['_setAccount', 'UA-7489188-1']); _gaq.push(['_trackPageview']);
+		(function() {
+			var ga = document.createElement('script'); ga.async = true; ga.src = 'http://www.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0];
+			s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+</head>
+<body>
+	<p>I love <strong>typography</strong> <em>a lot</em></p>
+</body>
+</html>

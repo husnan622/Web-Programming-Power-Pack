@@ -1,0 +1,152 @@
+<?php require_once("Connections\conn.php");?>
+<?php
+	ob_start();
+	session_start();
+        
+    $arr_self = explode("/",$_SERVER['PHP_SELF']);
+    $self = $arr_self[count($arr_self)-1];  
+    $back_page = ($self=="index.html" ? "." : $self);
+    $otentikasi = "otentikasi.php";   
+       
+    if(!isset($_SESSION[$app_code."username"])){
+    	header("location: ".$otentikasi."?back=".urlencode($back_page));
+        exit;
+    }
+    ob_end_flush();
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Administrator Kedai Online</title>
+<script type="text/javascript" src="scriptstyle.js"></script>
+</head>
+
+<body class="oneColLiqCtrHdr">
+
+<div id="container">
+  <div id="header">
+  		<?php include_once("header.php"); ?>
+        <!-- end #header -->  
+  </div>
+  <div id="mainContent">
+    <script type="text/javascript" language="javascript">
+		function formUserCallback(req){
+			showFormEditUser(false);
+			document.getElementById('form_user_insert').reset();
+			dsUser.loadData();
+		}
+		
+		var dsUser = new Spry.Data.XMLDataSet("rsxml.php?tabel=user", "kedaionline_db/user",{useCache:false});
+		var dsUserPager = new Spry.Data.PagedView(dsUser, { pageSize: 10 });
+		var dsUserPagerInfo = dsUserPager.getPagingInfo();
+	</script>
+    
+    <div id="formcontainer">
+          <div spry:region="dsUser dsUserPager dsUserPagerInfo">
+            <div spry:state="ready">
+              <table class="list" cellpadding="0" cellspacing="0">
+                <caption>List User</caption>
+                <thead>
+                	<tr>
+                  		<th spry:sort="id">Id</th>
+                  		<th spry:sort="nama">Username</th>
+                	</tr>
+                </thead>
+                <tfoot>
+                	<tr>
+                    	<td colspan="2" spry:repeatchildren="dsUserPagerInfo">
+                        	<a spry:if="{dsUserPagerInfo::ds_CurrentRowNumber} != {dsUserPagerInfo::ds_RowNumber}" href="#" onclick="dsUserPager.goToPage('{dsUserPagerInfo::ds_PageNumber}');  return false;">{dsUserPagerInfo::ds_PageNumber}</a>
+                <span spry:if="{dsUserPagerInfo::ds_CurrentRowNumber} == {dsUserPagerInfo::ds_RowNumber}" class="currentPage">{dsUserPagerInfo::ds_PageNumber}</span>
+                        </td>
+                    </tr>
+                </tfoot>
+                <tbody spry:repeatchildren="dsUserPager" spry:choose="choose">
+                	<tr spry:when="{dsUserPager::ds_RowID} == {dsUser::ds_CurrentRowID}" spry:selectgroup="page" spry:selected="selected" spry:setrow="dsUserPager" onclick="showFormEditUser(true)" spry:select="listRowSelect" spry:hover="listRowHover">
+                  		<td>{dsUser::id}</td>
+                  		<td>{dsUser::username}</td>
+                	</tr>
+                    <tr spry:default="default" spry:selectgroup="page" spry:setrow="dsUserPager" onclick="showFormEditUser(true)" spry:select="listRowSelect" spry:hover="listRowHover">
+                  		<td>{dsUserPager::id}</td>
+                  		<td>{dsUserPager::username}</td>
+                	</tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div id="form_usr">
+          <form  name="form_user_insert" id="form_user_insert" method="post" action="rsquery.php?tabel=user&amp;for=add" onsubmit="return formSubmit(this,formUserCallback);" target="dump">
+            <input type="text" name="user_id" id="user_id" style="display:none" value="">
+            <fieldset>
+              <legend>Tambah User</legend>
+              <span id="spryusername1">
+              <label>Username:</label>
+              <input type="text" name="user_nama" id="user_nama" value="">
+              <span class="textfieldRequiredMsg">*</span></span><br />
+              <span id="spryuserpass1">
+              <label>Password:</label>
+              <input type="password" name="user_password" id="user_password" />
+              <span class="passwordRequiredMsg">*</span></span>
+            </fieldset>
+            <div class="kontrol">
+            	<input name="btn_submit" type="submit" value="Simpan" class="button" >
+            	<input name="btn_reset" type="reset" value="Reset" class="button">
+            </div>
+          </form>
+          <form class="hiden"  name="form_user" id="form_user" method="post" action="rsquery.php?tabel=user&amp;for=add" onsubmit="return formSubmit(this,formUserCallback);" spry:detailregion="dsUser" target="dump">
+            <input type="text" name="user_id" id="user_id" style="display:none" value="{token}">
+            <fieldset>
+              <legend>Edit User</legend>
+              <span id="spryusername2">
+              <label>Username:</label>
+              <input type="text" name="user_nama" id="user_nama" value="{username}">
+              <span class="textfieldRequiredMsg">A value is required.</span></span><br />
+              <span id="spryuserpass2">
+              <label>Password:</label>
+              <input type="password" name="user_password" id="user_password" />
+              <span class="passwordRequiredMsg">A value is required.</span></span>
+            </fieldset>
+            <div class="kontrol">
+            	<input name="btn_submit" type="submit" value="Simpan" class="button" >
+            	<input name="btn_hapus" type="button" onclick="hapusUser();" value="Hapus" class="button" />
+            	<input name="btn_cancel" type="button" onclick="showFormEditUser(false);" value="Batal" class="button" />
+            </div>
+          </form>
+        </div>
+        <div id="status"></div>
+        </div>
+        
+        <script type="text/javascript">
+			var spryusername1 = new Spry.Widget.ValidationTextField("spryusername1");
+			var sprypass1 = new Spry.Widget.ValidationPassword("spryuserpass1");
+			var spryusername2 = new Spry.Widget.ValidationTextField("spryusername2","none");
+			var sprypass2 = new Spry.Widget.ValidationPassword("spryuserpass2","none");
+		
+			function showFormEditUser(show){
+				if(show){
+					Spry.$$('#form_user_insert').addClassName('hiden');
+					Spry.$$('#form_user').removeClassName('hiden');	
+				}
+				else{
+					Spry.$$('#form_user_insert').removeClassName('hiden');
+					Spry.$$('#form_user').addClassName('hiden');
+				}
+			}
+			
+			function hapusUser(){
+				var row = dsUser.getCurrentRow();
+				
+				if(confirm("Anda yakin menghapus data ?")){
+					var loadurl=Spry.Utils.loadURL("post","rsquery.php?tabel=user&user_nama="+row['nama']+"&user_id="+row['token']+"&for=rem",true,formUserCallback);
+				}
+			}	
+		</script>
+    <!-- end #mainContent -->
+  </div>
+  <div id="footer">
+    <?php include_once("footer.php"); ?>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+</body>
+</html>

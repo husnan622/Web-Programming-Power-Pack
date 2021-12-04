@@ -1,0 +1,143 @@
+<?php require_once("Connections\conn.php");?>
+<?php
+	ob_start();
+	session_start();
+    
+    $arr_self = explode("/",$_SERVER['PHP_SELF']);
+    $self = $arr_self[count($arr_self)-1];  
+    $back_page = ($self=="index.html" ? "." : $self);
+    $otentikasi = "otentikasi.php";
+    
+    if(!isset($_SESSION[$app_code."username"])){
+    	header("location: ".$otentikasi."?back=".urlencode($back_page));
+        exit;
+    }
+    ob_end_flush();
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Administrator Kedai Online</title>
+<script type="text/javascript" src="scriptstyle.js"></script>
+</head>
+
+<body class="oneColLiqCtrHdr">
+
+<div id="container">
+  <div id="header">
+  		<?php include_once("header.php"); ?>
+        <!-- end #header -->  
+  </div>
+  <div id="mainContent">
+  	<script type="text/javascript" language="javascript">
+		function formKategoriCallback(req){
+			showFormEditKategori(false);
+			document.getElementById('form_kategori_insert').reset();
+			dsKategori.loadData();
+		}
+			
+		var dsKategori = new Spry.Data.XMLDataSet("rsxml.php?tabel=kategori", "	kedaionline_db/kategori",{useCache:false});
+		var dsKategoriPager = new Spry.Data.PagedView(dsKategori,{ pageSize: 10 });
+		var dsKategoriPagerInfo = dsKategoriPager.getPagingInfo();
+	</script>
+    
+  	<div id="formcontainer">
+    	<div spry:region="dsKategori dsKategoriPager dsKategoriPagerInfo">
+    		<div spry:state="ready">
+      			<table class="list" cellpadding="0" cellspacing="0">
+                	<caption>List Kategori</caption>
+                    <thead>
+                    	<tr>
+                    		<th spry:sort="id">Id</th>
+                        	<th spry:sort="nama">Nama</th>
+                    	</tr>
+                    </thead>
+        			<tfoot>
+                    	<tr>
+                        	<td colspan="2" spry:repeatchildren="dsKategoriPagerInfo">
+                            	<a spry:if="{dsKategoriPagerInfo::ds_CurrentRowNumber} != {dsKategoriPagerInfo::ds_RowNumber}" href="#" onclick="dsKategoriPager.goToPage('{dsKategoriPagerInfo::ds_PageNumber}');  return false;">{dsKategoriPagerInfo::ds_PageNumber}</a>
+                <span spry:if="{dsKategoriPagerInfo::ds_CurrentRowNumber} == {dsKategoriPagerInfo::ds_RowNumber}" class="currentPage">{dsKategoriPagerInfo::ds_PageNumber}</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    <tbody spry:repeatchildren="dsKategoriPager" spry:choose="choose">
+                    	<tr spry:when="{dsKategoriPager::ds_RowID} == {dsKategori::ds_CurrentRowID}" spry:selectgroup="page" spry:selected="selected" spry:setrow="dsKategoriPager" onclick="showFormEditKategori(true)" spry:select="listRowSelect" spry:hover="listRowHover">
+                    		<td>{dsKategori::id}</td>
+          					<td>{dsKategori::nama}</td>
+        				</tr>
+                        <tr spry:default="default" spry:selectgroup="page" spry:setrow="dsKategoriPager" onclick="showFormEditKategori(true)" spry:select="listRowSelect" spry:hover="listRowHover">
+                    		<td>{dsKategoriPager::id}</td>
+          					<td>{dsKategoriPager::nama}</td>
+        				</tr>                    	
+                    </tbody>
+      			</table>                
+    		</div>
+  		</div>
+        
+       <div id="form_kat">
+    		<form  name="form_kategori_insert" id="form_kategori_insert" method="post" action="/adminKedaiOnline/rsquery.php?tabel=kategori&amp;for=add" onsubmit="return formSubmit(this,formKategoriCallback);" target="dump">
+      			<input type="text" name="kategori_id" id="kategori_id" style="display:none" value="">
+      			<fieldset>
+        			<legend>Tambah Kategori</legend>
+        			<span id="sprytextfield1">
+        			<label>Nama:</label>
+        			<input type="text" name="kategori_nama" id="kategori_nama" value="">
+        			<span class="textfieldRequiredMsg">*</span></span>
+				</fieldset>					
+				<div class="kontrol">
+					<input name="btn_submit" type="submit" value="Simpan" class="button" >
+					<input name="btn_reset" type="reset" value="Reset" class="button">
+				</div>				
+    		</form>
+    		<form class="hiden"  name="form_kategori" id="form_kategori" method="post" action="/adminKedaiOnline/rsquery.php?tabel=kategori&amp;for=add" onsubmit="return formSubmit(this,formKategoriCallback);" spry:detailregion="dsKategori" target="dump">
+      			<input type="text" name="kategori_id" id="kategori_id" style="display:none" value="{token}">
+      			<fieldset>
+        			<legend>Edit Kategori</legend>
+        			<span id="sprytextfield2">
+        			<label>Nama:</label>
+        			<input type="text" name="kategori_nama" id="kategori_nama" value="{nama}">
+        			<span class="textfieldRequiredMsg">A value is required.</span></span>
+				</fieldset>	
+				<div class="kontrol">
+					<input name="btn_submit" type="submit" value="Simpan" class="button" >
+					<input name="btn_hapus" type="button" onclick="hapusKategori();" value="Hapus" class="button" />
+					<input name="btn_cancel" type="button" onclick="showFormEditKategori(false);" value="Batal" class="button" />
+				</div>				
+    		</form>
+  		</div>
+  		<div id="status"></div>
+	</div>
+    <script type="text/javascript">
+		var sprytextfield1 = new Spry.Widget.ValidationTextField("sprytextfield1","none");
+		var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2","none");
+
+		function showFormEditKategori(show){
+			if(show){
+				Spry.$$('#form_kategori_insert').addClassName('hiden');
+				Spry.$$('#form_kategori').removeClassName('hiden');	
+			}
+			else{
+				Spry.$$('#form_kategori_insert').removeClassName('hiden');
+				Spry.$$('#form_kategori').addClassName('hiden');
+			}
+		}
+	
+		function hapusKategori(){
+			var row = dsKategori.getCurrentRow();
+		
+			if(confirm("Anda yakin menghapus data ?")){
+				var loadurl=Spry.Utils.loadURL("post","rsquery.php?tabel=kategori&kategori_nama="+row['nama']+"&kategori_id="+row['token']+"&for=rem",true,formKategoriCallback);
+			}
+		}
+	</script>
+    <!-- end #mainContent -->
+  </div>
+  <div id="footer">
+    <?php include_once("footer.php"); ?>
+  <!-- end #footer --></div>
+<!-- end #container --></div>
+
+<iframe id="dump" name="dump" src=""></iframe>
+</body>
+</html>

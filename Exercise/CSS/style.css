@@ -1,0 +1,57 @@
+@charset "utf-8";
+/* CSS Document */
+
+a[target]
+{
+	color: red;
+}
+
+[id|="p"]
+{
+	font-weight:bold;
+}
+
+a:link
+{
+	font-weight:bold;
+}
+a:visited
+{
+	font-weight:bolder;
+}
+a:active
+{
+	font-weight:lighter;
+}
+
+input:hover{
+	background-color:blue;
+}
+input:focus{
+	background-color:red;
+}
+
+body
+{
+	background-image:url(smiley.jpg);
+	background-repeat:no-repeat;
+	background-attachment:scroll;
+	font-variant:small-caps;
+	counter-reset: section;
+	counter-reset:header;
+	speak: normal;
+	border-radius-topleft:  
+}
+h2 { 
+  string-set: header "Chapter " counter(header) ": " content();
+  counter-increment:  header;
+}
+p:before
+{
+	counter-increment:section;
+	content: counter(section) ". ";
+}
+
+.sample{
+	font-weight:bold;
+}
