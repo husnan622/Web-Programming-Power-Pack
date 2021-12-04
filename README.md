@@ -1,8 +1,6 @@
 # Web Programming Power Pack
 
-Discusses the mandatory materials that must be mastered by a professional web programmer. Arranged sequentially and easily understood by beginners. Accompanied by examples of exercises. You can practice easily using the included exercise files.
-
-Material :
+## Material :
 * HTML.
 * PHP.
 * Using MySQL database.
